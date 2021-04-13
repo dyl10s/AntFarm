@@ -8,11 +8,7 @@
         "jsx": "react",
         "allowJs": true,
         "typeRoots": [
-            "./node_modules/@types",
-            "./node_modules/phaser/types"
-        ],
-        "types": [
-            "Phaser"
+            "./node_modules/@types"
         ]
     },
     "files": ["node_modules/phaser/types/phaser.d.ts"]
