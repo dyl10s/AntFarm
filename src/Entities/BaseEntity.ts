@@ -1,12 +1,14 @@
 export default class BaseEntity {
 
-    protected tag: string;
+    public tag: string;
 
     protected width: number;
     protected height: number;
 
     protected x: number;
     protected y: number;
+
+    protected color: number;
 
     protected scene: Phaser.Scene;
     protected world: BaseEntity[][];
@@ -27,6 +29,7 @@ export default class BaseEntity {
         this.tag = tag;
         this.world = world;
         
+        this.color = color;
         this.x = x;
         this.y = y;
         
@@ -105,5 +108,20 @@ export default class BaseEntity {
         }        
 
         return true;
+    }
+
+    public removeItem() {
+        this.rectangle.destroy();
+        this.rectangle = null;
+        this.world[this.x][this.y] = null;
+    }
+
+    public addItem(x: number, y: number) {
+        if(this.world[x][y] == null) {
+            this.x = x;
+            this.y = y;
+            this.rectangle = this.scene.add.rectangle(x * this.width, y * this.height, this.width, this.height, this.color);
+            this.world[this.x][this.y] = this;
+        }
     }
 }

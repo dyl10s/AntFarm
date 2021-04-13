@@ -56,11 +56,11 @@ export default class MainScene extends Phaser.Scene
 
         // Showing off gravity
         this.world[15][0] = new Ant(this.pixelSize, this.pixelSize, 15, 0, this, this.world);
-        this.world[15][7] = new Dirt(this.pixelSize, this.pixelSize, 15, 7, this, this.world);
-        this.world[15][6] = new Dirt(this.pixelSize, this.pixelSize, 15, 6, this, this.world);
-        this.world[15][5] = new Dirt(this.pixelSize, this.pixelSize, 15, 5, this, this.world);
-        this.world[15][4] = new Dirt(this.pixelSize, this.pixelSize, 15, 4, this, this.world);
-        this.world[15][3] = new Dirt(this.pixelSize, this.pixelSize, 15, 3, this, this.world);
+        this.world[15][7] = new Ant(this.pixelSize, this.pixelSize, 15, 7, this, this.world);
+        this.world[15][6] = new Ant(this.pixelSize, this.pixelSize, 15, 6, this, this.world);
+        this.world[15][5] = new Ant(this.pixelSize, this.pixelSize, 15, 5, this, this.world);
+        this.world[15][4] = new Ant(this.pixelSize, this.pixelSize, 15, 4, this, this.world);
+        this.world[15][3] = new Ant(this.pixelSize, this.pixelSize, 15, 3, this, this.world);
         this.world[15][2] = new Dirt(this.pixelSize, this.pixelSize, 15, 2, this, this.world);
         this.world[15][1] = new Dirt(this.pixelSize, this.pixelSize, 15, 1, this, this.world);
         
