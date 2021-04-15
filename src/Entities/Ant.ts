@@ -1,3 +1,4 @@
+import * as Phaser from "phaser";
 import BaseEntity from "./BaseEntity";
 
 export default class Ant extends BaseEntity {
@@ -8,7 +9,7 @@ export default class Ant extends BaseEntity {
     private itemHolding: BaseEntity = null;
     
     constructor(width: number, height: number, x: number, y: number, gameScene: Phaser.Scene, world: BaseEntity[][]) {
-        super("Ant", 0x822a3e, true, false, width, height, x, y, gameScene, world);
+        super("Ant", 0x822a3e, true, true, false, width, height, x, y, gameScene, world);
     }
 
     run() {

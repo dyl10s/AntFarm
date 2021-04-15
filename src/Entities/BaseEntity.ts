@@ -18,13 +18,20 @@ export default class BaseEntity {
     protected isGrounded: boolean = false;
     protected useGravity: boolean = true;
     protected isSand: boolean = true;
+    protected canGrab: boolean = true;
 
     public pixelUpdated: boolean = false;
 
-    private simulationRate: number = 100;
+    public stepsSinceLastGravity: number = 0;
+    public settleSteps: number = 1;
+
+    private simulationRate: number = 2;
     private timeSinceStep: number = 0;
 
-    constructor(tag: string, color: number, useGravity: boolean, isSand: boolean, width: number, height: number, x: number, y: number, gameScene: Phaser.Scene, world: BaseEntity[][]) {
+    private nextMoveX: number = null;
+    private nextMoveY: number = null;
+
+    constructor(tag: string, color: number, useGravity: boolean, canGrab: boolean, isSand: boolean, width: number, height: number, x: number, y: number, gameScene: Phaser.Scene, world: BaseEntity[][]) {
         this.scene = gameScene;
         this.tag = tag;
         this.world = world;
@@ -33,6 +40,7 @@ export default class BaseEntity {
         this.x = x;
         this.y = y;
         
+        this.canGrab = canGrab;
         this.isSand = isSand;
         this.useGravity = useGravity;
 
@@ -54,31 +62,54 @@ export default class BaseEntity {
         }
     }
 
+    // We want to move all the pixels at once. This fixes some weird stuff
+    public preformMove() {
+        if(this.nextMoveX && this.nextMoveY) {
+            if(this.world[this.nextMoveX][this.nextMoveY] == null){
+                this.world[this.x][this.y] = null;
+                this.x = this.nextMoveX;
+                this.y = this.nextMoveY;
+                this.world[this.x][this.y] = this;
+                this.rectangle.setPosition(this.x * this.width, this.y * this.height);
+            }
+        }
+        this.nextMoveX = null;
+        this.nextMoveY = null;
+    }
+
     public run() {
+        this.stepsSinceLastGravity++;
         // Gravity Simulation    
-        if(this.useGravity) {
+        if(this.useGravity && this.stepsSinceLastGravity <= this.settleSteps) {
             if(this.checkForEmpty(this.x, this.y + 1)) { // Fall strait down
+                
+                // If the item can grab then it should be able to stick to walls
+                if(this.canGrab && (this.checkForWalls(this.x - 1, this.y) || this.checkForWalls(this.x + 1, this.y))) {
+                    return;
+                }
+
                 this.moveTo(this.x, this.y + 1);
                 this.isGrounded = false;
-            }else if(this.isSand && this.checkForEmpty(this.x + 1, this.y + 1)) { // Fall to bottom right
+                this.stepsSinceLastGravity = 0;
+
+            }else if(this.isSand && this.checkForEmpty(this.x + 1, this.y + 1) && this.checkForEmpty(this.x + 1, this.y)) { // Fall to bottom right
                 this.moveTo(this.x + 1, this.y + 1);
                 this.isGrounded = false;
-            }else if(this.isSand && this.checkForEmpty(this.x - 1, this.y + 1)) { // Fall to bottom right
+                this.stepsSinceLastGravity = 0;
+            }else if(this.isSand && this.checkForEmpty(this.x - 1, this.y + 1) && this.checkForEmpty(this.x - 1, this.y)) { // Fall to bottom right
                 this.moveTo(this.x - 1, this.y + 1);
                 this.isGrounded = false;
+                this.stepsSinceLastGravity = 0;
             }else{
                 this.isGrounded = true;
             }
-        }  
+        }
     }
 
     public moveTo(newX: number, newY: number): boolean {
         if(this.checkForEmpty(newX, newY)) {
-            this.world[this.x][this.y] = null;
-            this.x = newX;
-            this.y = newY;
-            this.world[this.x][this.y] = this;
-            this.rectangle.setPosition(this.x * this.width, this.y * this.height);
+            this.nextMoveX = newX;
+            this.nextMoveY = newY;
             return true;
         }else{
             return false;
@@ -110,7 +141,33 @@ export default class BaseEntity {
         return true;
     }
 
+    public checkForWalls(xLoc: number, yLoc: number) {
+        
+        if(xLoc < 0) {
+            return true;
+        }
+
+        if(yLoc < 0) {
+            return true;
+        }
+
+        if(xLoc > this.world.length) {
+            return true;
+        }
+
+        if(yLoc > this.world[xLoc].length) {
+            return true;
+        } 
+
+        if(this.world[xLoc][yLoc] != null && (this.world[xLoc][yLoc].tag == "Dirt" || this.world[xLoc][yLoc].tag == "Grass")) {
+            return true;
+        }     
+
+        return false;
+    }
+
     public removeItem() {
+        this.pixelUpdated = true;
         this.rectangle.destroy();
         this.rectangle = null;
         this.world[this.x][this.y] = null;
@@ -118,6 +175,8 @@ export default class BaseEntity {
 
     public addItem(x: number, y: number) {
         if(this.world[x][y] == null) {
+            this.pixelUpdated = true;
+            this.stepsSinceLastGravity = 0;
             this.x = x;
             this.y = y;
             this.rectangle = this.scene.add.rectangle(x * this.width, y * this.height, this.width, this.height, this.color);

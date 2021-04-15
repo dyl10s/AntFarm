@@ -3,6 +3,7 @@ import Ant from '../Entities/Ant';
 import BaseEntity from '../Entities/BaseEntity';
 import Dirt from '../Entities/Dirt';
 import Grass from '../Entities/Grass';
+import QueenAnt from '../Entities/QueenAnt';
 
 export default class MainScene extends Phaser.Scene
 {
@@ -12,7 +13,7 @@ export default class MainScene extends Phaser.Scene
     private pixelsX: number;
     private pixelsY: number;
 
-    private pixelSize: number;
+    private pixelSize: number = 5;
 
     private gameWidth: number = 800;
     private gameHeight: number = 600;
@@ -21,7 +22,6 @@ export default class MainScene extends Phaser.Scene
         super("MainScene");
         this.ant = null;
         this.world = new Array<Array<BaseEntity>>();
-        this.pixelSize = 10;
 
         this.pixelsX = this.gameWidth / this.pixelSize;
         this.pixelsY = this.gameHeight / this.pixelSize;
@@ -49,28 +49,28 @@ export default class MainScene extends Phaser.Scene
 
         // Create the grass
         for(let x = 0; x <= this.pixelsX; x++) {
-            for(let y = Math.floor(this.pixelsY / 3) - 2; y <= Math.floor(this.pixelsY / 3); y++) {
+            for(let y = Math.floor(this.pixelsY / 3) - 2; y <= Math.floor(this.pixelsY / 3) - 1; y++) {
                 this.world[x][y] = new Grass(this.pixelSize, this.pixelSize, x, y, this, this.world);
             }
         }
 
-        // Showing off gravity
-        this.world[15][0] = new Ant(this.pixelSize, this.pixelSize, 15, 0, this, this.world);
-        this.world[15][7] = new Ant(this.pixelSize, this.pixelSize, 15, 7, this, this.world);
-        this.world[15][6] = new Ant(this.pixelSize, this.pixelSize, 15, 6, this, this.world);
-        this.world[15][5] = new Ant(this.pixelSize, this.pixelSize, 15, 5, this, this.world);
-        this.world[15][4] = new Ant(this.pixelSize, this.pixelSize, 15, 4, this, this.world);
-        this.world[15][3] = new Ant(this.pixelSize, this.pixelSize, 15, 3, this, this.world);
-        this.world[15][2] = new Dirt(this.pixelSize, this.pixelSize, 15, 2, this, this.world);
-        this.world[15][1] = new Dirt(this.pixelSize, this.pixelSize, 15, 1, this, this.world);
-        
+        // Spawn Queen
+        this.world[75][0] = new QueenAnt(this.pixelSize, this.pixelSize, 75, 0, this, this.world);
     }
     
     update(time: number, delta: number) {
         for(let x = 0; x < this.pixelsX; x++) {
-            for(let y = this.pixelsY - 1; y >= 0; y--) {
+            for(let y = 0; y < this.pixelsY; y++) {
                 if(this.world[x][y] != null) {
                     this.world[x][y].update(delta);
+                }
+            }
+        }
+
+        for(let x = 0; x < this.pixelsX; x++) {
+            for(let y = 0; y < this.pixelsY; y++) {
+                if(this.world[x][y] != null) {
+                    this.world[x][y].preformMove();
                 }
             }
         }
