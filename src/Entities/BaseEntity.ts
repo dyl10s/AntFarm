@@ -1,3 +1,5 @@
+import MainScene from "../Scenes/MainScene";
+
 export default class BaseEntity {
 
     public tag: string;
@@ -10,7 +12,7 @@ export default class BaseEntity {
 
     protected color: number;
 
-    protected scene: Phaser.Scene;
+    protected scene: MainScene;
     protected world: BaseEntity[][];
 
     protected rectangle: Phaser.GameObjects.Rectangle;
@@ -25,13 +27,13 @@ export default class BaseEntity {
     public stepsSinceLastGravity: number = 0;
     public settleSteps: number = 1;
 
-    private simulationRate: number = 50;
+    private simulationRate: number = 10;
     private timeSinceStep: number = 0;
 
     private nextMoveX: number = null;
     private nextMoveY: number = null;
 
-    constructor(tag: string, color: number, useGravity: boolean, canGrab: boolean, isSand: boolean, width: number, height: number, x: number, y: number, gameScene: Phaser.Scene, world: BaseEntity[][]) {
+    constructor(tag: string, color: number, useGravity: boolean, canGrab: boolean, isSand: boolean, width: number, height: number, x: number, y: number, gameScene: MainScene, world: BaseEntity[][]) {
         this.scene = gameScene;
         this.tag = tag;
         this.world = world;
@@ -84,7 +86,7 @@ export default class BaseEntity {
             if(this.checkForEmpty(this.x, this.y + 1)) { // Fall strait down
                 
                 // If the item can grab then it should be able to stick to walls
-                if(this.canGrab && (this.checkForWalls(this.x - 1, this.y) || this.checkForWalls(this.x + 1, this.y))) {
+                if(this.canGrab && (this.checkForWalls(this.x, this.y - 1) || this.checkForWalls(this.x - 1, this.y) || this.checkForWalls(this.x + 1, this.y))) {
                     return;
                 }
 
@@ -107,10 +109,8 @@ export default class BaseEntity {
     }
 
     public moveTo(newX: number, newY: number): boolean {
-
-        
-
         if(this.checkForEmpty(newX, newY)) {
+            this.stepsSinceLastGravity = 0;
             this.nextMoveX = newX;
             this.nextMoveY = newY;
             return true;
@@ -160,6 +160,32 @@ export default class BaseEntity {
 
         if(yLoc > this.world[xLoc].length) {
             return true;
+        } 
+
+        if(this.world[xLoc][yLoc] != null && 
+            (this.world[xLoc][yLoc].tag == "Dirt" || this.world[xLoc][yLoc].tag == "Grass" || this.world[xLoc][yLoc].tag == "Egg")) {
+            return true;
+        }     
+
+        return false;
+    }
+
+    public checkForGrabable(xLoc: number, yLoc: number) {
+        
+        if(xLoc < 0) {
+            return false;
+        }
+
+        if(yLoc < 0) {
+            return false;
+        }
+
+        if(xLoc > this.world.length) {
+            return false;
+        }
+
+        if(yLoc > this.world[xLoc].length) {
+            return false;
         } 
 
         if(this.world[xLoc][yLoc] != null && (this.world[xLoc][yLoc].tag == "Dirt" || this.world[xLoc][yLoc].tag == "Grass")) {

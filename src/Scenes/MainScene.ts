@@ -13,10 +13,10 @@ export default class MainScene extends Phaser.Scene
     private pixelsX: number;
     private pixelsY: number;
 
-    private pixelSize: number = 5;
+    public pixelSize: number = 5;
 
-    private gameWidth: number = 800;
-    private gameHeight: number = 600;
+    public gameWidth: number = 800;
+    public gameHeight: number = 600;
 
     constructor() {
         super("MainScene");
@@ -55,7 +55,7 @@ export default class MainScene extends Phaser.Scene
         }
 
         // Spawn Queen
-        this.world[75][0] = new QueenAnt(this.pixelSize, this.pixelSize, 75, 0, this, this.world);
+        this.world[75][0] = new QueenAnt(this.pixelSize, this.pixelSize, 75, 1, this, this.world);
     }
     
     update(time: number, delta: number) {

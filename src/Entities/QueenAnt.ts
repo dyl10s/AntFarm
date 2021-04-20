@@ -1,6 +1,7 @@
 import BaseEntity from "./BaseEntity";
 import Egg from "./Egg";
 import FindPath from "../Helpers/Pathfind"
+import MainScene from "../Scenes/MainScene";
 
 export default class QueenAnt extends BaseEntity {
 
@@ -13,7 +14,7 @@ export default class QueenAnt extends BaseEntity {
 
     private eggLocations: any[] = [];
 
-    constructor(width: number, height: number, x: number, y: number, gameScene: Phaser.Scene, world: BaseEntity[][]) {
+    constructor(width: number, height: number, x: number, y: number, gameScene: MainScene, world: BaseEntity[][]) {
         super("Queen", 0x8b0000, true, true, false, width, height, x, y, gameScene, world);
     }
 
@@ -29,7 +30,7 @@ export default class QueenAnt extends BaseEntity {
         if(this.isGrounded) {
             
             this.digNest();
-
+            this.layEggs();
         }
 
         super.run();
@@ -69,6 +70,33 @@ export default class QueenAnt extends BaseEntity {
         }
 
         return false;
+    }
+
+    selectDirtRandomly() {
+        let validLocations = [];
+        
+        if(this.checkForGrabable(this.x, this.y)){
+            validLocations.push([this.x, this.y]);
+        }
+
+        if(this.checkForGrabable(this.x - 1, this.y)){
+            validLocations.push([this.x - 1, this.y]);
+        }
+
+        if(this.checkForGrabable(this.x - 1, this.y - 1)){
+            validLocations.push([this.x - 1, this.y - 1]);
+        }
+
+        if(this.checkForGrabable(this.x, this.y - 1)){
+            validLocations.push([this.x, this.y - 1]);
+        }
+
+        if(this.checkForGrabable(this.x + 1, this.y)){
+            validLocations.push([this.x + 1, this.y]);
+        }
+
+        let selectedLoc = validLocations[Math.floor(Math.random() * validLocations.length)];
+        return selectedLoc;
     }
 
     placeItemRandomly() {
@@ -125,7 +153,12 @@ export default class QueenAnt extends BaseEntity {
     }
 
     placeItemAtEntry() {
-        let nextStep = FindPath(this.world, this.x, this.y, this.nestEntrypoint[0], this.nestEntrypoint[1] + 1, false, true);
+        let nextStep = FindPath(this.world, this.x, this.y, this.nestEntrypoint[0], this.nestEntrypoint[1] + 1, false, false, true);
+
+        if(nextStep == null) {
+            this.placeItemRandomly();
+            return;
+        }
 
         if(nextStep[0] === 0 && nextStep[1] === 0) {
             // Place item to left or right
@@ -155,14 +188,16 @@ export default class QueenAnt extends BaseEntity {
         if(this.goal == "Nest") {
             // Pick a nest target location
             if(this.nestLocation.length == 0) {
-                this.nestLocation.push(Math.floor(Math.random() * 80), Math.floor(Math.random() * 30 + 40));
+                this.nestLocation.push(
+                    Math.floor(Math.random() * this.scene.gameWidth / this.scene.pixelSize), 
+                    Math.max(60, Math.floor(Math.random() * this.scene.gameHeight / this.scene.pixelSize - 40)));
                 console.log("The nest location is " + this.nestLocation[0] + " " + this.nestLocation[1]);
             }
 
             // If we are not holding anything, dig the nest
             if(!this.itemHolding){
                 //Walk as close as we can
-                let nextStep = FindPath(this.world, this.x, this.y, this.nestLocation[0], this.nestLocation[1], true, false);
+                let nextStep = FindPath(this.world, this.x, this.y, this.nestLocation[0], this.nestLocation[1], true, false, true);
                 
                 // Check if nesting is complete
                 if(nextStep[0] == 0 && nextStep[1] == 0){
@@ -195,15 +230,47 @@ export default class QueenAnt extends BaseEntity {
 
         if(this.goal == "Eggs") {
             
+            // Return items to the surface
+            if(this.itemHolding){
+                this.placeItemAtEntry();
+                return;
+            }
+
             // Check for a designated egg laying location
             let eggLocation = this.anyEggLocationsAvailable();
             if(eggLocation != null){
-                let stepToEggLocation = FindPath(this.world, this.x, this.y, eggLocation[0], eggLocation[1], false, false);
-                if(stepToEggLocation[0] == eggLocation[0] && stepToEggLocation[1] == eggLocation[1]) {
+                let stepToEggLocation = FindPath(this.world, this.x, this.y, eggLocation[0], eggLocation[1], true, false, true);
 
+                if(this.checkForGrabable(stepToEggLocation[0], stepToEggLocation[1])){
+                    this.grabItem(stepToEggLocation[0], stepToEggLocation[1]);
+                    return;
+                }
+
+                if(stepToEggLocation[0] == eggLocation[0] && stepToEggLocation[1] == eggLocation[1]) {
+                    console.log("Place egg");
+                    this.world[eggLocation[0]][eggLocation[1]] = new Egg(this.width, this.height, eggLocation[0], eggLocation[1], this.scene, this.world);
                 }else{
+                    console.log("Moving to egg location");
                     this.moveTo(stepToEggLocation[0], stepToEggLocation[1]);
                 }
+            } else {
+
+                let moveToNest = FindPath(this.world, this.x, this.y, this.nestLocation[0], this.nestLocation[1], false, false, true);
+
+                if(moveToNest != null && moveToNest[0] == 0 && moveToNest[1] == 0){
+                    // Pick some piece of dirt to remove and make an egg location
+                    let findRandomDirt = this.selectDirtRandomly();
+                    if(findRandomDirt) {
+                        this.grabItem(findRandomDirt[0], findRandomDirt[1]);
+                        this.eggLocations.push({
+                            x: findRandomDirt[0],
+                            y: findRandomDirt[1]
+                        });
+                    }
+                }else if(moveToNest != null){
+                    this.moveTo(moveToNest[0], moveToNest[1]);
+                }
+                
             }
 
         }

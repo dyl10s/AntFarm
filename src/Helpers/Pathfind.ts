@@ -3,7 +3,7 @@ import BaseEntity from "../Entities/BaseEntity";
 let openList: Node[] = [];
 let closedList: Node[] = [];
 
-export default function FindPath(world: BaseEntity[][], startX: number, startY: number, targetX: number, targetY: number, ignoreDirt: boolean = false, ignoreAnts: boolean = false): number[] {
+export default function FindPath(world: BaseEntity[][], startX: number, startY: number, targetX: number, targetY: number, ignoreDirt: boolean = false, ignoreAnts: boolean = false, sticky: boolean = false): number[] {
 
     if(startX == targetX && startY == targetY){
         return [0, 0];
@@ -43,22 +43,22 @@ export default function FindPath(world: BaseEntity[][], startX: number, startY: 
         // Get all the possible moves
         let childrenNodes: Node[] = [];
 
-        if(checkForEmpty(world, curNode.x + 1, curNode.y, ignoreDirt, ignoreAnts)){
+        if(checkMoveable(world, curNode.x + 1, curNode.y, ignoreDirt, ignoreAnts, sticky)){
             let newChild = new Node(curNode, curNode.x + 1, curNode.y);
             childrenNodes.push(newChild);
         }
 
-        if(checkForEmpty(world, curNode.x - 1, curNode.y, ignoreDirt, ignoreAnts)){
+        if(checkMoveable(world, curNode.x - 1, curNode.y, ignoreDirt, ignoreAnts, sticky)){
             let newChild = new Node(curNode, curNode.x - 1, curNode.y);
             childrenNodes.push(newChild);
         }
 
-        if(checkForEmpty(world, curNode.x, curNode.y - 1, ignoreDirt, ignoreAnts)){
+        if(checkMoveable(world, curNode.x, curNode.y - 1, ignoreDirt, ignoreAnts, sticky)){
             let newChild = new Node(curNode, curNode.x, curNode.y - 1);
             childrenNodes.push(newChild);
         }
 
-        if(checkForEmpty(world, curNode.x, curNode.y + 1, ignoreDirt, ignoreAnts)){
+        if(checkMoveable(world, curNode.x, curNode.y + 1, ignoreDirt, ignoreAnts, sticky)){
             let newChild = new Node(curNode, curNode.x, curNode.y + 1);
             childrenNodes.push(newChild);
         }
@@ -74,7 +74,7 @@ export default function FindPath(world: BaseEntity[][], startX: number, startY: 
 
             // We don't want to dig if we don't have to
             if(world[child.x][child.y] != null) {
-                child.f += 100;
+                child.f += 1000;
             }
 
             let existingNode = openList.find((openNode) => openNode.x == child.x && openNode.y == child.y);
@@ -113,7 +113,7 @@ class Node {
 
 }
 
-function checkForEmpty(world: BaseEntity[][], xLoc: number, yLoc: number, ignoreDirt: boolean, ignoreAnts: boolean) {
+function checkMoveable(world: BaseEntity[][], xLoc: number, yLoc: number, ignoreDirt: boolean, ignoreAnts: boolean, sticky: boolean) {
         
     if(xLoc < 0) {
         return false;
@@ -134,6 +134,14 @@ function checkForEmpty(world: BaseEntity[][], xLoc: number, yLoc: number, ignore
     if(world[xLoc][yLoc] != null && (!ignoreDirt || (world[xLoc][yLoc].tag != "Dirt" && world[xLoc][yLoc].tag != "Grass")) && (!ignoreAnts || (world[xLoc][yLoc].tag != "Queen" && world[xLoc][yLoc].tag != "Ant"))) {
         return false;
     }        
+
+    if(!sticky && world[xLoc][yLoc + 1] == null) {
+        return false;
+    }
+
+    if(sticky && (world[xLoc - 1][yLoc] == null && world[xLoc + 1][yLoc] == null)) {
+        return false;
+    }
 
     return true;
 }
