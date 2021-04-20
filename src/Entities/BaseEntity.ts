@@ -25,7 +25,7 @@ export default class BaseEntity {
     public stepsSinceLastGravity: number = 0;
     public settleSteps: number = 1;
 
-    private simulationRate: number = 2;
+    private simulationRate: number = 50;
     private timeSinceStep: number = 0;
 
     private nextMoveX: number = null;
@@ -107,6 +107,9 @@ export default class BaseEntity {
     }
 
     public moveTo(newX: number, newY: number): boolean {
+
+        
+
         if(this.checkForEmpty(newX, newY)) {
             this.nextMoveX = newX;
             this.nextMoveY = newY;

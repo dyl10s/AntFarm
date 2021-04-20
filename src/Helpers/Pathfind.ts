@@ -3,7 +3,11 @@ import BaseEntity from "../Entities/BaseEntity";
 let openList: Node[] = [];
 let closedList: Node[] = [];
 
-export default function FindPath(world: BaseEntity[][], startX: number, startY: number, targetX: number, targetY: number, ignoreDirt: boolean = false): number[] {
+export default function FindPath(world: BaseEntity[][], startX: number, startY: number, targetX: number, targetY: number, ignoreDirt: boolean = false, ignoreAnts: boolean = false): number[] {
+
+    if(startX == targetX && startY == targetY){
+        return [0, 0];
+    }
 
     openList = [];
     closedList = [];
@@ -39,22 +43,22 @@ export default function FindPath(world: BaseEntity[][], startX: number, startY: 
         // Get all the possible moves
         let childrenNodes: Node[] = [];
 
-        if(checkForEmpty(world, curNode.x + 1, curNode.y, ignoreDirt)){
+        if(checkForEmpty(world, curNode.x + 1, curNode.y, ignoreDirt, ignoreAnts)){
             let newChild = new Node(curNode, curNode.x + 1, curNode.y);
             childrenNodes.push(newChild);
         }
 
-        if(checkForEmpty(world, curNode.x - 1, curNode.y, ignoreDirt)){
+        if(checkForEmpty(world, curNode.x - 1, curNode.y, ignoreDirt, ignoreAnts)){
             let newChild = new Node(curNode, curNode.x - 1, curNode.y);
             childrenNodes.push(newChild);
         }
 
-        if(checkForEmpty(world, curNode.x, curNode.y - 1, ignoreDirt)){
+        if(checkForEmpty(world, curNode.x, curNode.y - 1, ignoreDirt, ignoreAnts)){
             let newChild = new Node(curNode, curNode.x, curNode.y - 1);
             childrenNodes.push(newChild);
         }
 
-        if(checkForEmpty(world, curNode.x, curNode.y + 1, ignoreDirt)){
+        if(checkForEmpty(world, curNode.x, curNode.y + 1, ignoreDirt, ignoreAnts)){
             let newChild = new Node(curNode, curNode.x, curNode.y + 1);
             childrenNodes.push(newChild);
         }
@@ -67,6 +71,11 @@ export default function FindPath(world: BaseEntity[][], startX: number, startY: 
             child.g = curNode.g + 1;
             child.h = Math.pow(child.x - targetX, 2) + Math.pow(child.y - targetY, 2);
             child.f = child.g + child.h;
+
+            // We don't want to dig if we don't have to
+            if(world[child.x][child.y] != null) {
+                child.f += 100;
+            }
 
             let existingNode = openList.find((openNode) => openNode.x == child.x && openNode.y == child.y);
             if(existingNode && child.g > existingNode.g){
@@ -104,7 +113,7 @@ class Node {
 
 }
 
-function checkForEmpty(world: BaseEntity[][], xLoc: number, yLoc: number, ignoreDirt: boolean) {
+function checkForEmpty(world: BaseEntity[][], xLoc: number, yLoc: number, ignoreDirt: boolean, ignoreAnts: boolean) {
         
     if(xLoc < 0) {
         return false;
@@ -122,7 +131,7 @@ function checkForEmpty(world: BaseEntity[][], xLoc: number, yLoc: number, ignore
         return false;
     }
 
-    if(world[xLoc][yLoc] != null && (!ignoreDirt || (world[xLoc][yLoc].tag != "Dirt" && world[xLoc][yLoc].tag != "Grass"))) {
+    if(world[xLoc][yLoc] != null && (!ignoreDirt || (world[xLoc][yLoc].tag != "Dirt" && world[xLoc][yLoc].tag != "Grass")) && (!ignoreAnts || (world[xLoc][yLoc].tag != "Queen" && world[xLoc][yLoc].tag != "Ant"))) {
         return false;
     }        
 
