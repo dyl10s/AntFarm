@@ -27,36 +27,18 @@ export default class QueenAnt extends BaseEntity {
             }
         }
 
+        // If the ant is on the ground run the code for the ant
         if(this.isGrounded) {
             
             this.digNest();
             this.layEggs();
         }
 
+        // run the BaseEntity update function
         super.run();
     }
 
-    // Ants can step up 1 block
-    moveRight() {
-        if(!this.moveTo(this.x + 1, this.y)) {
-            return this.moveTo(this.x + 1, this.y - 1)
-        }
-
-        return true;
-    }
-
-    moveLeft() {
-        if(!this.moveTo(this.x - 1, this.y)) {
-            return this.moveTo(this.x - 1, this.y - 1)
-        }
-
-        return true;
-    }
-
-    grabItemBelow(): boolean {
-        return this.grabItem(this.x, this.y + 1)
-    }
-
+    // Grab an item from a specific location
     grabItem(x: number, y: number): boolean {
         if(!this.itemHolding){
             let item = this.world[x][y];
@@ -72,6 +54,7 @@ export default class QueenAnt extends BaseEntity {
         return false;
     }
 
+    // Select a radome piece of dirt around the ant
     selectDirtRandomly() {
         let validLocations = [];
         
@@ -99,6 +82,7 @@ export default class QueenAnt extends BaseEntity {
         return selectedLoc;
     }
 
+    // Place an item randomly around the ant in any available space
     placeItemRandomly() {
         let validLocations = [];
         
@@ -145,6 +129,7 @@ export default class QueenAnt extends BaseEntity {
         this.placeItem(dropLoc[0], dropLoc[1]);
     }
 
+    // Place an item 
     placeItem(x: number, y: number) {
         if(this.checkForEmpty(x, y)){
             this.itemHolding.addItem(x, y);
@@ -152,6 +137,7 @@ export default class QueenAnt extends BaseEntity {
         }
     }
 
+    // Place an item at the entrypoint of the nest
     placeItemAtEntry() {
         let nextStep = FindPath(this.world, this.x, this.y, this.nestEntrypoint[0], this.nestEntrypoint[1] + 1, false, false, true);
 

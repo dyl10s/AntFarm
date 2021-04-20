@@ -15,6 +15,7 @@ export default class Egg extends BaseEntity {
 
         this.hatchTimer += 1;
 
+        // If the egg has been around long enough then destroy itself and hatch an egg
         if(this.hatchTimer > Egg.HATCH_TIME) {
             this.removeItem();
             this.world[this.x][this.y] = new Ant(this.width, this.height, this.x, this.y, this.scene, this.world);

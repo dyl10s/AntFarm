@@ -3,6 +3,7 @@ import BaseEntity from "../Entities/BaseEntity";
 let openList: Node[] = [];
 let closedList: Node[] = [];
 
+// This function uses the A* algorithm to find a path from 1 point to another
 export default function FindPath(world: BaseEntity[][], startX: number, startY: number, targetX: number, targetY: number, ignoreDirt: boolean = false, ignoreAnts: boolean = false, sticky: boolean = false): number[] {
 
     if(startX == targetX && startY == targetY){
@@ -113,6 +114,7 @@ class Node {
 
 }
 
+// Check if we can move in a specific space. This is ued for pathfinding.
 function checkMoveable(world: BaseEntity[][], xLoc: number, yLoc: number, ignoreDirt: boolean, ignoreAnts: boolean, sticky: boolean) {
         
     if(xLoc < 0) {

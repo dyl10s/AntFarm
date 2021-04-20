@@ -12,6 +12,7 @@ const config = {
             gravity: { y: 200 }
         },
     },
+    parent: "game",
     scene: MainScene,
 }
 

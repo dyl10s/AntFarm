@@ -27,7 +27,7 @@ export default class BaseEntity {
     public stepsSinceLastGravity: number = 0;
     public settleSteps: number = 1;
 
-    private simulationRate: number = 10;
+    private simulationRate: number = 100;
     private timeSinceStep: number = 0;
 
     private nextMoveX: number = null;
