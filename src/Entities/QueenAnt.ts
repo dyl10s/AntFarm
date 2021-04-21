@@ -5,14 +5,16 @@ import MainScene from "../Scenes/MainScene";
 
 export default class QueenAnt extends BaseEntity {
 
-    private itemHolding: BaseEntity = null;
+    public itemHolding: BaseEntity = null;
 
-    private goal: string = "Nest";
+    public goal: string = "Nest";
+    
+    public numEggs: number = 0;
 
-    private nestLocation: number[] = [];
-    private nestEntrypoint: number[] = [];
+    public nestLocation: number[] = [];
+    public nestEntrypoint: number[] = [];
 
-    private eggLocations: any[] = [];
+    public eggLocations: any[] = [];
 
     constructor(width: number, height: number, x: number, y: number, gameScene: MainScene, world: BaseEntity[][]) {
         super("Queen", 0x8b0000, true, true, false, width, height, x, y, gameScene, world);
@@ -28,9 +30,12 @@ export default class QueenAnt extends BaseEntity {
         }
 
         if(this.isGrounded) {
+            if(this.numEggs < 3){
+                this.digNest();
+                this.layEggs();
+            }
             
-            this.digNest();
-            this.layEggs();
+
         }
 
         super.run();
@@ -247,8 +252,9 @@ export default class QueenAnt extends BaseEntity {
                 }
 
                 if(stepToEggLocation[0] == eggLocation[0] && stepToEggLocation[1] == eggLocation[1]) {
-                    console.log("Place egg");
-                    this.world[eggLocation[0]][eggLocation[1]] = new Egg(this.width, this.height, eggLocation[0], eggLocation[1], this.scene, this.world);
+                    console.log("Place egg"); 
+                    this.world[eggLocation[0]][eggLocation[1]] = new Egg(this.width, this.height, eggLocation[0], eggLocation[1], this.scene, this.world, this);
+                    this.numEggs++;
                 }else{
                     console.log("Moving to egg location");
                     this.moveTo(stepToEggLocation[0], stepToEggLocation[1]);
