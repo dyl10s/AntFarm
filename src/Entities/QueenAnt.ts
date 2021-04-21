@@ -30,12 +30,10 @@ export default class QueenAnt extends BaseEntity {
         }
 
         if(this.isGrounded) {
-            if(this.numEggs < 3){
+            if(this.numEggs < 1){
                 this.digNest();
                 this.layEggs();
             }
-            
-
         }
 
         super.run();
@@ -157,6 +155,7 @@ export default class QueenAnt extends BaseEntity {
         }
     }
 
+    
     placeItemAtEntry() {
         let nextStep = FindPath(this.world, this.x, this.y, this.nestEntrypoint[0], this.nestEntrypoint[1] + 1, false, false, true);
 

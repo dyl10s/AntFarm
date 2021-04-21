@@ -5,7 +5,7 @@ import QueenAnt from "./QueenAnt";
 
 export default class Egg extends BaseEntity {
 
-    private static HATCH_TIME = 100;
+    private static HATCH_TIME = 1;
     private hatchTimer = 0;
     private Q: QueenAnt;
     

@@ -28,7 +28,7 @@ export default class FoodAnt extends BaseEntity {
         super.run();
 
         if(this.isGrounded) {
-            this.digFoodHole();
+            //this.digFoodHole();
         }
     }
 
@@ -102,12 +102,16 @@ export default class FoodAnt extends BaseEntity {
     }
 
     placeItemAtEntry() {
-        let nextStep = FindPath(this.world, this.x, this.y, this.Queen.nestEntrypoint[0], this.Queen.nestEntrypoint[1] + 1, true, true, true);
-
-        if(nextStep == null && this.y == this.Queen.nestEntrypoint[1]+1) {
-            console.log("PLACED UP TOP");
-            this.placeItemRandomly();
-            return;
+        let nextStep = FindPath(this.world, this.x, this.y, this.Queen.nestEntrypoint[0], this.Queen.nestEntrypoint[1] + 1, false, true, true);
+        if(nextStep == null) {
+            if(this.y == this.Queen.nestEntrypoint[1]){
+                console.log("PLACED UP TOP");
+                this.placeItemRandomly();
+                return;
+            } else {
+                console.log("stuck");
+            }
+            
         }
 
         if(nextStep[0] === 0 && nextStep[1] === 0) {
@@ -131,6 +135,7 @@ export default class FoodAnt extends BaseEntity {
             this.placeItem(selectedLocation.x, selectedLocation.y);
         }else{
             this.moveTo(nextStep[0], nextStep[1]);
+            //console.log("trying my best");
         }
     }
     
@@ -160,9 +165,11 @@ export default class FoodAnt extends BaseEntity {
 
 
                     this.grabItem(nextStep[0], nextStep[1]);
+                    //console.log("made it here");
 
                 }else{
                     this.moveTo(nextStep[0], nextStep[1]);
+                    //console.log("trying to move");
                 }
             }
             else // If we are holding something return it to the nest entrypoint
