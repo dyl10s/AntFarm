@@ -18,6 +18,7 @@ export default class QueenAnt extends BaseEntity {
 
     constructor(width: number, height: number, x: number, y: number, gameScene: MainScene, world: BaseEntity[][]) {
         super("Queen", 0x8b0000, true, true, false, width, height, x, y, gameScene, world);
+        
     }
 
     run() {

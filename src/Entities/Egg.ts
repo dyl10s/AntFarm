@@ -2,11 +2,14 @@ import MainScene from "../Scenes/MainScene";
 import FoodAnt from "./FoodAnt";
 import BaseEntity from "./BaseEntity";
 import QueenAnt from "./QueenAnt";
+import Ant from "./Ant";
+
 
 
 export default class Egg extends BaseEntity {
 
-    private static HATCH_TIME = 1;
+    private static HATCH_TIME = 100;
+
     private hatchTimer = 0;
     private Q: QueenAnt;
     

@@ -107,7 +107,7 @@ export default class FoodAnt extends BaseEntity {
         let nextStep = FindPath(this.world, this.x, this.y, this.Queen.nestEntrypoint[0], this.Queen.nestEntrypoint[1] + 1, false, true, true);
 
         if(nextStep == null) {
-            console.log("null");
+            //console.log("null");
             this.placeItemRandomly();
             return;
         }
@@ -186,7 +186,14 @@ export default class FoodAnt extends BaseEntity {
                 // Check if nesting is complete
                 if(nextStep[0] == 0 && nextStep[1] == 0){
                     let foodLocY = Math.floor(37);
-                    let foodLocX = this.Queen.nestEntrypoint[0] < 80 ? Math.floor(Math.random() * 150) + 120 :Math.floor(Math.random() * 10) + 30
+                    let foodLocX;
+                    if(this.Queen.nestEntrypoint[0] < 80){
+                        foodLocX = 150;
+                        //foodLocX = Math.max(150, Math.floor(Math.random() * 140) + 120);
+                    } else{
+                        foodLocX = 10;
+                        //foodLocX = Math.min(10, Math.floor(Math.random() * 10) + 30);
+                    }
                     console.log("TestX: " + foodLocX);
                     console.log("TestY: " + foodLocY);
                     this.world[foodLocX][foodLocY] = new Food(this.width, this.height, foodLocX, foodLocY, this.scene, this.world, this.Queen);
@@ -247,7 +254,8 @@ export default class FoodAnt extends BaseEntity {
 
     gatherFood(){
         if(this.goal == "GatherFood"){
-            let pathToFood = FindPath(this.world, this.x, this.y, this.foodLocation[0], this.foodLocation[1], false, true, true);
+            console.log(this.foodLocation);
+            let pathToFood = FindPath(this.world, this.x, this.y, this.foodLocation[0].x, this.foodLocation[0].y, false, true, true);
 
             if(this.itemHolding){
                 this.placeItemInFoodHole();
