@@ -33,7 +33,13 @@ export default class QueenAnt extends BaseEntity {
             if(this.numEggs < 1){
                 this.digNest();
                 this.layEggs();
+            } else{
+                if(this.rectangle != null){
+                    this.removeItem();
+                }
+                    
             }
+                
         }
 
         super.run();

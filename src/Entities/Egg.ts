@@ -3,6 +3,7 @@ import FoodAnt from "./FoodAnt";
 import BaseEntity from "./BaseEntity";
 import QueenAnt from "./QueenAnt";
 
+
 export default class Egg extends BaseEntity {
 
     private static HATCH_TIME = 1;
