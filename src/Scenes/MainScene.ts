@@ -62,7 +62,11 @@ export default class MainScene extends Phaser.Scene
 
     }
     
+
+    // Update the game
     update(time: number, delta: number) {
+
+        // Call the update function on every pixel in the world
         for(let x = 0; x < this.pixelsX; x++) {
             for(let y = 0; y < this.pixelsY; y++) {
                 if(this.world[x][y] != null) {
@@ -71,6 +75,8 @@ export default class MainScene extends Phaser.Scene
             }
         }
 
+        // Move all the pixels in the world according to their 
+        // update call
         for(let x = 0; x < this.pixelsX; x++) {
             for(let y = 0; y < this.pixelsY; y++) {
                 if(this.world[x][y] != null) {

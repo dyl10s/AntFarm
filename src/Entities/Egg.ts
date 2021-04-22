@@ -23,6 +23,7 @@ export default class Egg extends BaseEntity {
         
         this.hatchTimer += 1;
 
+        // If the egg has been around long enough then destroy itself and hatch an egg
         if(this.hatchTimer > Egg.HATCH_TIME) {
             console.log("Egg Hatched");
             this.removeItem();
