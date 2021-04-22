@@ -2,8 +2,10 @@ import * as Phaser from 'phaser';
 import Ant from '../Entities/Ant';
 import BaseEntity from '../Entities/BaseEntity';
 import Dirt from '../Entities/Dirt';
+import FoodAnt from '../Entities/FoodAnt';
 import Grass from '../Entities/Grass';
 import QueenAnt from '../Entities/QueenAnt';
+import Food from '../Entities/Food';
 
 export default class MainScene extends Phaser.Scene
 {
@@ -55,7 +57,9 @@ export default class MainScene extends Phaser.Scene
         }
 
         // Spawn Queen
-        this.world[75][0] = new QueenAnt(this.pixelSize, this.pixelSize, 75, 1, this, this.world);
+        let Queen: QueenAnt = new QueenAnt(this.pixelSize, this.pixelSize, 75, 1, this, this.world);
+        this.world[75][0] = Queen;
+
     }
     
 
