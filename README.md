@@ -4,11 +4,12 @@ A live version of the project can be found [here](https://ant-farm.vercel.app/).
 
 ## About
 
-Demo Video Click Gif For Full Quality Video
+This ant farm simultator is a proof of concept for simulating ant digging. There are a plethora of ant farm simulations that explore the food collection that ants do but not much out there that has to do with the digging. Turns out this is a lot trickier then we originally expected. Just digging a simple nest requires some decently advanced algoritms and pathfinding. We believe that this project has created a good baseline that could be explored further in the future. 
+
+## Demo
+Click Gif For Full Quality Video
 
 [![Demo](https://user-images.githubusercontent.com/12243691/116593025-a773d080-a8ee-11eb-8bff-d507f6febfdc.gif)](https://drive.google.com/file/d/1eQDom4rqwHkU6m9XuuRpXhmNlQ0V3hBq/view?usp=sharing)
-
-This ant farm simultator is a proof of concept for simulating ant digging. There are a plethora of ant farm simulations that explore the food collection that ants do but not much out there that has to do with the digging. Turns out this is a lot trickier then we originally expected. Just digging a simple nest requires some decently advanced algoritms and pathfinding. We believe that this project has created a good baseline that could be explored further in the future. 
 
 ## Technologies
 
